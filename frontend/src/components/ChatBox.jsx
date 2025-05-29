@@ -7,28 +7,15 @@ import {
   setAllResponses,
   setFileData,
 } from "../redux/reducers/AiReducer";
-import { getWebContainer } from "../config/webContainer";
-import { VscOpenPreview } from "react-icons/vsc";
+import { IoMdSend } from "react-icons/io";
 
-const ChatBox = () => {
+const ChatBox = ({onResponse,mountFiles,setmountFiles}) => {
   const [prompt, setprompt] = useState("");
   let dispatch = useDispatch();
-  const [mountFiles, setmountFiles] = useState({});
-  const [webContainer, setwebContainer] = useState(null);
+  
   const [iFrameUrl, setiFrameUrl] = useState("");
 
-  const [start, setstart] = useState(false)
-
   const { currentFileCode } = useSelector((state) => state.ai);
-
-  useEffect(() => {
-    if (!webContainer) {
-      getWebContainer().then((container) => {
-        setwebContainer(container);
-        console.log("Container Started");
-      });
-    }
-  }, []);
 
   async function handleGetAIResponse(e) {
     e.preventDefault();
@@ -42,10 +29,10 @@ const ChatBox = () => {
         { withCredentials: true }
       );
 
+      
+
       setmountFiles(res?.data?.fileTree);
-
       dispatch(setFileData(res?.data?.currentProject?.response));
-
       dispatch(
         setAllResponses(res?.data?.fileData?.map((item) => item.filename))
       );
@@ -55,82 +42,63 @@ const ChatBox = () => {
     }
   }
 
-  async function handleRunCode() {
-    try {
-      console.log("Mounting Files");
-      await webContainer?.mount(mountFiles);
-      console.log("mounted");
-      
-      let lsProcess = await webContainer?.spawn("ls")
-
-      lsProcess.output.pipeTo(new WritableStream({
-        write(chunk) {
-          console.log(chunk)
-        }
-      }))
-
-      let installProcess = await webContainer?.spawn("npm", ["install"]);
-      installProcess.output.pipeTo(
-        new WritableStream({
-          write(chunk) {
-            console.log(chunk);
-          },
-        })
-      );
-
-      setstart(() => true)
-
-      let startProcess = await webContainer?.spawn("npm", ["start"]);
-
-      startProcess.output.pipeTo(
-        new WritableStream({
-          write(chunk) {
-            console.log(chunk);
-          },
-        })
-      );
-
-      webContainer?.on("server-ready", function (port, url) {
-        console.log(port, url); 
-        setiFrameUrl(url);
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
+  
 
   return (
-    <>
-      <div className="w-[600px] h-[60px] bg-[#111827] text-white flex items-center pl-4 border-2 rounded-lg bottom-3 absolute border-gray-700">
+    <div className=" inset-0 flex items-end  pointer-events-none ">
+      {/* Prompt Input Bar */}
+      <div className="w-full max-w-2xl mb-6 pointer-events-auto">
         <form
           onSubmit={handleGetAIResponse}
-          className="w-full flex justify-around items-center"
+          className="flex items-center gap-2"
         >
           <input
             type="text"
-            className="w-[80%] h-full bg-transparent outline-none text-white"
-            placeholder="Write Prompt"
-            name="prompt"
             value={prompt}
             onChange={(e) => setprompt(e.target.value)}
+            placeholder="Ask me to build something..."
+            className="flex-1 bg-[#1E222A] border border-gray-700 rounded-md px-3 py-2 text-sm 
+                  focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500
+                  transition-all duration-200"
           />
-          <button type="submit" className="px-3 py-2 bg-blue-900 rounded-lg">
-            Send
+          <button
+            type="submit"
+            className="p-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
+                  transition-colors duration-200 flex items-center justify-center"
+          >
+            <IoMdSend />
           </button>
         </form>
       </div>
-      {currentFileCode && (
-        <button
-          onClick={handleRunCode}
-          className="px-3 py-2 bg-blue-600 rounded-lg absolute right-5 top-[400px]"
-        >
-          {start ? "Run" : "Start"}
-        </button>
-      )}
+
+      {/* Start/Run Button */}
+      {/* {currentFileCode && (
+        <div className="absolute top-1/2 right-10 transform -translate-y-1/2 pointer-events-auto">
+          <button
+            onClick={handleRunCode}
+            className="bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transition px-7 py-3 rounded-2xl text-white font-bold text-lg shadow-xl border-2 border-green-400"
+          >
+            {start ? "Run" : "Start"}
+          </button>
+        </div>
+      )} */}
+
+      {/* WebContainer Output Iframe */}
       {iFrameUrl && webContainer && (
-        <iframe crossorigin="anonymous" className="text-white w-[500px] h-[300px] absolute bottom-20 left-[900px] bg-white" src={iFrameUrl}></iframe>
+        <div className="fixed bottom-32 right-10 pointer-events-auto shadow-2xl rounded-2xl border-2 border-gray-700 overflow-hidden bg-gray-900">
+          <div className="bg-gray-800 px-4 py-2 text-white font-semibold border-b border-gray-700 flex items-center justify-between">
+            <span>Web Output</span>
+            <span className="text-xs text-gray-400">{iFrameUrl}</span>
+          </div>
+          <iframe
+            className="w-[500px] h-[300px] bg-black"
+            src={iFrameUrl}
+            title="Web Output"
+            allow="cross-origin-isolated"
+          ></iframe>
+        </div>
       )}
-    </>
+    </div>
   );
 };
 

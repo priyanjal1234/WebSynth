@@ -1,5 +1,6 @@
 import React from "react";
 import { Check, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const PricingPlan = ({
   name,
@@ -56,8 +57,8 @@ const PricingPlan = ({
       </div>
 
       <div className="p-6 border-t border-gray-800">
-        <a
-          href="#signup"
+        <Link
+          to={'/register'}
           className={`block text-center py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
             popular
               ? "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-lg shadow-indigo-500/20"
@@ -65,7 +66,7 @@ const PricingPlan = ({
           }`}
         >
           {buttonText}
-        </a>
+        </Link>
       </div>
     </div>
   );

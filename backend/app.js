@@ -14,7 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "https://bolt-frontend-three.vercel.app",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
@@ -22,7 +22,7 @@ app.use(
 app.use("/api/ai",aiRouter)
 
 
-const port = process.env.PORT || 4000;
+const port = 3000;
 app.listen(port, function () {
   console.log(`Server is running on port ${port}`);
 });

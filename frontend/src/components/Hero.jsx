@@ -1,6 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import CodeTypingEffect from './CodeTypingEffect';
+import { Link } from "react-router-dom";
+import generateRandomWord from '../utils/generateRandom';
 
 const Hero = () => {
   const heroRef = useRef(null);
@@ -87,15 +89,16 @@ function LandingPage() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <a 
-                href="#get-started" 
+              <Link 
+                to={`/building`}
                 className="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg px-6 py-3 text-base shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all duration-200"
               >
                 Start Building Free
                 <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
+              </Link>
               <a 
-                href="#demo" 
+              target='_blank'
+                href="https://youtu.be/dDpI5Ioi2eo?si=4K11wl0TcUppdRLS" 
                 className="inline-flex items-center justify-center bg-gray-800 hover:bg-gray-700 text-white font-medium rounded-lg px-6 py-3 text-base border border-gray-700 hover:border-gray-600 transition-all duration-200"
               >
                 Watch Demo
