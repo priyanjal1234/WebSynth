@@ -30,6 +30,7 @@ const Building = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [mountFiles, setmountFiles] = useState({});
   const [start, setstart] = useState(false);
+  const [hasStarted, setHasStarted] = useState(false);
 
   const { currentFileCode } = useSelector((state) => state.ai);
   const [webContainer, setwebContainer] = useState(null);
@@ -80,14 +81,25 @@ const Building = () => {
     return acc;
   }, {});
 
-  async function handleRunCode() {
+   async function handleRunCode() {
+    if (isRunning) return; // Prevent multiple clicks while running
+    
     setIsRunning(true);
+    setHasStarted(true);
+    
     try {
+      if (Object.keys(mountFiles).length === 0) {
+        console.log("No files to mount");
+        setIsRunning(false);
+        return; // You should add toast notification here
+      }
+
       console.log("Mounting Files");
       await webContainer?.mount(mountFiles);
       console.log("mounted");
 
-      let lsProcess = await webContainer?.spawn("ls");
+      // Optional: List files (for debugging)
+      const lsProcess = await webContainer?.spawn("ls");
       lsProcess.output.pipeTo(
         new WritableStream({
           write(chunk) {
@@ -96,7 +108,8 @@ const Building = () => {
         })
       );
 
-      let installProcess = await webContainer?.spawn("npm", ["install"]);
+      // Install dependencies
+      const installProcess = await webContainer?.spawn("npm", ["install"]);
       installProcess.output.pipeTo(
         new WritableStream({
           write(chunk) {
@@ -104,8 +117,10 @@ const Building = () => {
           },
         })
       );
+      await installProcess.exit;
 
-      let startProcess = await webContainer?.spawn("npm", ["start"]);
+      // Start the application
+      const startProcess = await webContainer?.spawn("npm", ["start"]);
       startProcess.output.pipeTo(
         new WritableStream({
           write(chunk) {
@@ -114,14 +129,21 @@ const Building = () => {
         })
       );
 
-      webContainer?.on("server-ready", function (port, url) {
-        setIsRunning(false);
-        setstart(() => true);
+      webContainer?.on("server-ready", (port, url) => {
         console.log(port, url);
         setiFrameUrl(url);
+        setIsRunning(false);
       });
+
+      // Handle process exit
+      startProcess.exit.then(() => {
+        console.log("Process exited");
+        setIsRunning(false);
+      });
+
     } catch (error) {
-      console.log(error.message);
+      console.error("Error running code:", error.message);
+      setIsRunning(false);
     }
   }
 
@@ -192,10 +214,17 @@ const Building = () => {
           </div>
           <button
             onClick={handleRunCode}
-            className="flex items-center gap-1 px-3 py-1 bg-blue-600 rounded text-sm hover:bg-blue-700 transition-colors"
+            disabled={isRunning}
+            className={`flex items-center gap-1 px-3 py-1 rounded text-sm transition-colors ${
+              isRunning
+                ? "bg-gray-600 cursor-not-allowed"
+                : hasStarted
+                ? "bg-green-600 hover:bg-green-700"
+                : "bg-blue-600 hover:bg-blue-700"
+            }`}
           >
             <VscRunAll className="text-sm" />
-            {isRunning ? "Running" : !isRunning && start ? "Start" : "Run"}
+            {isRunning ? "Running..." : hasStarted ? "Restart" : "Run"}
           </button>
         </div>
 
