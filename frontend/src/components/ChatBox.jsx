@@ -37,7 +37,7 @@ const ChatBox = () => {
 
     try {
       let res = await axios.post(
-        "https://bolt-backend-zcq7.onrender.com/api/ai/get-result",
+        "http://localhost:3000/api/ai/get-result",
         { prompt },
         { withCredentials: true }
       );
