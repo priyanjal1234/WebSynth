@@ -11,6 +11,9 @@ const registerSchema = z.object({
   password: z
     .string()
     .min(6, { message: "Password must be at least 6 characters long" }),
+
+  agreeToTerms: z
+    .literal(true, { errorMap: () => ({ message: "You must agree to the terms" }) }),
 });
 
-export default registerSchema
+export default registerSchema;

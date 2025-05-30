@@ -81,12 +81,12 @@ const Building = () => {
     return acc;
   }, {});
 
-   async function handleRunCode() {
+  async function handleRunCode() {
     if (isRunning) return; // Prevent multiple clicks while running
-    
+
     setIsRunning(true);
     setHasStarted(true);
-    
+
     try {
       if (Object.keys(mountFiles).length === 0) {
         console.log("No files to mount");
@@ -140,7 +140,6 @@ const Building = () => {
         console.log("Process exited");
         setIsRunning(false);
       });
-
     } catch (error) {
       console.error("Error running code:", error.message);
       setIsRunning(false);

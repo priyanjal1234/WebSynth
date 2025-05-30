@@ -29,8 +29,10 @@ const ChatBox = ({ onResponse, mountFiles, setmountFiles }) => {
         { withCredentials: true }
       );
 
+      
+
       setmountFiles(res?.data?.fileTree);
-      dispatch(setFileData(res?.data?.currentProject?.response));
+      dispatch(setFileData(res?.data?.fileData));
       dispatch(
         setAllResponses(res?.data?.fileData?.map((item) => item.filename))
       );

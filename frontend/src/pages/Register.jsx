@@ -21,7 +21,7 @@ const Register = () => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  let dispatch = useDispatch()
+  let dispatch = useDispatch();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -39,25 +39,23 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       let result = registerSchema.safeParse(formData);
 
       if (result.success) {
         await userService.register(formData);
-        setIsLoading(false)
-        toast.success("Registration Successfull")
-        dispatch(setLoggedin(true))
-        navigate("/building")
+        setIsLoading(false);
+        toast.success("Registration Successfull");
+        dispatch(setLoggedin(true));
+        navigate("/building");
       } else {
-        setIsLoading(false)
+        setIsLoading(false);
         setErrors(result.error.flatten().fieldErrors);
       }
     } catch (error) {
-      setIsLoading(false)
-      toast.error(
-        error instanceof Error ? error.message : "Error registering user"
-      );
+      setIsLoading(false);
+      toast.error(error?.response?.data?.message);
     }
   };
 
@@ -137,7 +135,6 @@ const Register = () => {
           checked={formData.agreeToTerms}
           onChange={handleChange}
           error={errors.agreeToTerms}
-          required
         />
 
         <div>
