@@ -9,10 +9,10 @@ import {
 } from "../redux/reducers/AiReducer";
 import { IoMdSend } from "react-icons/io";
 
-const ChatBox = ({onResponse,mountFiles,setmountFiles}) => {
+const ChatBox = ({ onResponse, mountFiles, setmountFiles }) => {
   const [prompt, setprompt] = useState("");
   let dispatch = useDispatch();
-  
+
   const [iFrameUrl, setiFrameUrl] = useState("");
 
   const { currentFileCode } = useSelector((state) => state.ai);
@@ -29,8 +29,6 @@ const ChatBox = ({onResponse,mountFiles,setmountFiles}) => {
         { withCredentials: true }
       );
 
-      
-
       setmountFiles(res?.data?.fileTree);
       dispatch(setFileData(res?.data?.currentProject?.response));
       dispatch(
@@ -41,8 +39,6 @@ const ChatBox = ({onResponse,mountFiles,setmountFiles}) => {
       console.log(error.message);
     }
   }
-
-  
 
   return (
     <div className=" inset-0 flex items-end  pointer-events-none ">

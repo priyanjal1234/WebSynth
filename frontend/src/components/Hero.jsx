@@ -90,7 +90,7 @@ function LandingPage() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Link 
-                to={`/building`}
+                to={`/register`}
                 className="inline-flex items-center justify-center bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium rounded-lg px-6 py-3 text-base shadow-lg shadow-indigo-600/30 hover:shadow-indigo-500/40 transition-all duration-200"
               >
                 Start Building Free
